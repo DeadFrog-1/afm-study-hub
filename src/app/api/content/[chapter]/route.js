@@ -1,16 +1,13 @@
 // ─────────────────────────────────────────────
 // API: Serve chapter content
 // ─────────────────────────────────────────────
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import {
   loadChapter, loadQuestions, loadQuiz, loadFlashcards,
   loadMindMap, loadCRExam, getAvailableChapters, loadMetadata,
 } from '@/lib/content-loader';
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { chapter: string } }
-) {
+export async function GET(req, { params }) {
   const chapterId = params.chapter;
 
   // Special endpoint for metadata

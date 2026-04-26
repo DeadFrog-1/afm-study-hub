@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { Flashcard } from '@/types';
 import { FlashcardDeck } from '@/components/flashcards/FlashcardDeck';
 
 export default function FlashcardsPage() {
   const params = useParams();
-  const chapterId = params.id as string;
-  const [cards, setCards] = useState<Flashcard[]>([]);
+  const chapterId = params.id;
+  const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -3,13 +3,7 @@
 import { useState, useCallback } from 'react';
 import { CheckCircle2, Circle } from 'lucide-react';
 
-interface Props {
-  chapterId: string;
-  pageId: string;
-  totalPages: number;
-}
-
-export function ConfidenceMarker({ chapterId, pageId, totalPages }: Props) {
+export function ConfidenceMarker({ chapterId, pageId, totalPages }) {
   const [marked, setMarked] = useState(false);
   const [saving, setSaving] = useState(false);
 

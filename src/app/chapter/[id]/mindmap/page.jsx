@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { MindMapNode } from '@/types';
 import { MindMap } from '@/components/mindmap/MindMap';
 
 export default function MindMapPage() {
   const params = useParams();
-  const chapterId = params.id as string;
-  const [mindmap, setMindmap] = useState<MindMapNode | null>(null);
+  const chapterId = params.id;
+  const [mindmap, setMindmap] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

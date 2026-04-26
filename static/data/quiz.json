@@ -1,0 +1,67 @@
+[
+  {
+    "id": "ch01-qz01",
+    "questionText": "Which of the following is an indicator that a company is failing to maximise shareholder wealth?",
+    "options": [
+      {"label": "A", "text": "The company has not diversified its operations"},
+      {"label": "B", "text": "Financing of the company is through equity finance alone"},
+      {"label": "C", "text": "Investment decisions are evaluated on the basis of their net present value"},
+      {"label": "D", "text": "Management has challenging performance bonuses"}
+    ],
+    "correctIndex": 1,
+    "officialExplanation": "Financing of the company through equity alone is not consistent with maximising shareholder wealth, since it deprives shareholders of the benefits of debt finance, which is cheaper than equity.",
+    "section": "2.2"
+  },
+  {
+    "id": "ch01-qz02",
+    "questionText": "To lower financial gearing is a response to which of the following types of risk?\n1. Business risk\n2. Credit risk\n3. Financial risk\n4. Operational risk",
+    "options": [
+      {"label": "A", "text": "3 only"},
+      {"label": "B", "text": "2 and 3 only"},
+      {"label": "C", "text": "1, 2 and 3 only"},
+      {"label": "D", "text": "1, 2, 3 and 4"}
+    ],
+    "correctIndex": 1,
+    "officialExplanation": "Business risk is driven by operational gearing, not financial gearing. Lowering financial gearing addresses credit risk and financial risk.",
+    "section": "6.3"
+  },
+  {
+    "id": "ch01-qz03",
+    "questionText": "Which of the following statements concerning agency effects are correct?\n1. The purpose of good corporate governance is to eliminate agency costs.\n2. The agency problem arises when the objectives of a company's directors and shareholders are not in accord.",
+    "options": [
+      {"label": "A", "text": "1 only"},
+      {"label": "B", "text": "2 only"},
+      {"label": "C", "text": "Both 1 and 2"},
+      {"label": "D", "text": "Neither 1 nor 2"}
+    ],
+    "correctIndex": 1,
+    "officialExplanation": "The agency problem refers to conflict in agency relationships (e.g. between directors and shareholders). Good corporate governance should minimise agency costs but cannot eliminate them; nor is this the sole purpose of corporate governance.",
+    "section": "3.3"
+  },
+  {
+    "id": "ch01-qz04",
+    "questionText": "Which of the following is likely to be most effective in encouraging goal congruence between a board of directors and the shareholders of a listed company?",
+    "options": [
+      {"label": "A", "text": "Accountability in corporate reporting"},
+      {"label": "B", "text": "Appointment of independent non-executive directors"},
+      {"label": "C", "text": "Executive share option plans"},
+      {"label": "D", "text": "Profit-related bonuses"}
+    ],
+    "correctIndex": 2,
+    "officialExplanation": "Goal congruence is encouraged when decisions taken are in the mutual best interest of the directors and shareholders; typically through long-term reward schemes (e.g. ESOPs).",
+    "section": "3.4"
+  },
+  {
+    "id": "ch01-qz05",
+    "questionText": "An activity designed to reduce the probability of an adverse impact of a risk is an example of which of the following?",
+    "options": [
+      {"label": "A", "text": "Risk diversification"},
+      {"label": "B", "text": "Risk hedging"},
+      {"label": "C", "text": "Risk management"},
+      {"label": "D", "text": "Risk mitigation"}
+    ],
+    "correctIndex": 3,
+    "officialExplanation": "Risk mitigation is any activity designed to reduce either the impact or the probability of an adverse impact of a risk. Hedging is just one technique which might be used to mitigate risk.",
+    "section": "6.4"
+  }
+]

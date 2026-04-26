@@ -6,9 +6,9 @@ import path from 'path';
 
 const DB_PATH = path.join(process.cwd(), 'content', 'study-hub.db');
 
-let _db: Database.Database | null = null;
+let _db = null;
 
-export function getDb(): Database.Database {
+export function getDb() {
   if (!_db) {
     _db = new Database(DB_PATH);
     _db.pragma('journal_mode = WAL');
@@ -18,7 +18,7 @@ export function getDb(): Database.Database {
   return _db;
 }
 
-function initTables(db: Database.Database) {
+function initTables(db) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS page_progress (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -158,7 +158,7 @@ function initTables(db: Database.Database) {
 
 // ── Progress Functions ──
 
-export function markPageConfident(chapterId: string, pageId: string): void {
+export function markPageConfident(chapterId, pageId) {
   const db = getDb();
   db.prepare(`
     INSERT INTO page_progress (chapter_id, page_id, confidence_marked, marked_at)
@@ -167,7 +167,7 @@ export function markPageConfident(chapterId: string, pageId: string): void {
   `).run(chapterId, pageId);
 }
 
-export function unmarkPageConfident(chapterId: string, pageId: string): void {
+export function unmarkPageConfident(chapterId, pageId) {
   const db = getDb();
   db.prepare(`
     UPDATE page_progress SET confidence_marked = 0, marked_at = NULL
@@ -175,37 +175,37 @@ export function unmarkPageConfident(chapterId: string, pageId: string): void {
   `).run(chapterId, pageId);
 }
 
-export function isPageConfident(chapterId: string, pageId: string): boolean {
+export function isPageConfident(chapterId, pageId) {
   const db = getDb();
   const row = db.prepare(`
     SELECT confidence_marked FROM page_progress
     WHERE chapter_id = ? AND page_id = ?
-  `).get(chapterId, pageId) as { confidence_marked: number } | undefined;
+  `).get(chapterId, pageId);
   return row?.confidence_marked === 1;
 }
 
-export function getChapterProgress(chapterId: string, totalPages: number): { marked: number; total: number; percent: number } {
+export function getChapterProgress(chapterId, totalPages) {
   const db = getDb();
   const row = db.prepare(`
     SELECT COUNT(*) as marked FROM page_progress
     WHERE chapter_id = ? AND confidence_marked = 1
-  `).get(chapterId) as { marked: number };
+  `).get(chapterId);
   const marked = row.marked;
   return { marked, total: totalPages, percent: totalPages > 0 ? Math.round((marked / totalPages) * 100) : 0 };
 }
 
-export function getOverallProgress(totalPages: number): { marked: number; total: number; percent: number } {
+export function getOverallProgress(totalPages) {
   const db = getDb();
   const row = db.prepare(`
     SELECT COUNT(*) as marked FROM page_progress WHERE confidence_marked = 1
-  `).get() as { marked: number };
+  `).get();
   const marked = row.marked;
   return { marked, total: totalPages, percent: totalPages > 0 ? Math.round((marked / totalPages) * 100) : 0 };
 }
 
 // ── Question Attempts ──
 
-export function saveQuestionAttempt(chapterId: string, questionId: string, text: string): void {
+export function saveQuestionAttempt(chapterId, questionId, text) {
   const db = getDb();
   db.prepare(`
     INSERT INTO question_attempts (chapter_id, question_id, attempt_text)
@@ -213,7 +213,7 @@ export function saveQuestionAttempt(chapterId: string, questionId: string, text:
   `).run(chapterId, questionId, text);
 }
 
-export function revealAnswer(chapterId: string, questionId: string): void {
+export function revealAnswer(chapterId, questionId) {
   const db = getDb();
   db.prepare(`
     INSERT INTO question_attempts (chapter_id, question_id, revealed_answer)
@@ -224,7 +224,7 @@ export function revealAnswer(chapterId: string, questionId: string): void {
 
 // ── Quiz ──
 
-export function saveQuizAttempt(chapterId: string, quizId: string, option: string, isCorrect: boolean): void {
+export function saveQuizAttempt(chapterId, quizId, option, isCorrect) {
   const db = getDb();
   db.prepare(`
     INSERT INTO quiz_attempts (chapter_id, quiz_id, selected_option, is_correct)
@@ -232,13 +232,13 @@ export function saveQuizAttempt(chapterId: string, quizId: string, option: strin
   `).run(chapterId, quizId, option, isCorrect ? 1 : 0);
 }
 
-export function getChapterQuizScore(chapterId: string): { correct: number; total: number; percent: number } {
+export function getChapterQuizScore(chapterId) {
   const db = getDb();
   const rows = db.prepare(`
     SELECT quiz_id, is_correct FROM quiz_attempts WHERE chapter_id = ?
-  `).all(chapterId) as { quiz_id: string; is_correct: number }[];
+  `).all(chapterId);
   // Only count last attempt per quiz
-  const lastAttempts = new Map<string, number>();
+  const lastAttempts = new Map();
   for (const r of rows) lastAttempts.set(r.quiz_id, r.is_correct);
   const total = lastAttempts.size;
   const correct = Array.from(lastAttempts.values()).filter(v => v === 1).length;
@@ -247,7 +247,7 @@ export function getChapterQuizScore(chapterId: string): { correct: number; total
 
 // ── Study Sessions / Streaks ──
 
-export function recordStudySession(durationMinutes: number): void {
+export function recordStudySession(durationMinutes) {
   const db = getDb();
   const today = new Date().toISOString().split('T')[0];
   db.prepare(`
@@ -257,11 +257,11 @@ export function recordStudySession(durationMinutes: number): void {
   `).run(today, durationMinutes, durationMinutes);
 }
 
-export function getStudyStreak(): number {
+export function getStudyStreak() {
   const db = getDb();
   const rows = db.prepare(`
     SELECT session_date FROM study_sessions ORDER BY session_date DESC
-  `).all() as { session_date: string }[];
+  `).all();
   if (rows.length === 0) return 0;
   let streak = 0;
   const today = new Date();
@@ -278,13 +278,13 @@ export function getStudyStreak(): number {
   return streak;
 }
 
-export function getStreakCalendar(days: number = 30): boolean[] {
+export function getStreakCalendar(days = 30) {
   const db = getDb();
   const rows = db.prepare(`
     SELECT session_date FROM study_sessions ORDER BY session_date DESC
-  `).all() as { session_date: string }[];
+  `).all();
   const dates = new Set(rows.map(r => r.session_date));
-  const result: boolean[] = [];
+  const result = [];
   const today = new Date();
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
@@ -294,7 +294,7 @@ export function getStreakCalendar(days: number = 30): boolean[] {
   return result;
 }
 
-export function getWeeklyStudyTime(): number {
+export function getWeeklyStudyTime() {
   const db = getDb();
   const now = new Date();
   const weekAgo = new Date(now);
@@ -302,6 +302,6 @@ export function getWeeklyStudyTime(): number {
   const row = db.prepare(`
     SELECT COALESCE(SUM(duration_minutes), 0) as total
     FROM study_sessions WHERE session_date >= ?
-  `).get(weekAgo.toISOString().split('T')[0]) as { total: number };
+  `).get(weekAgo.toISOString().split('T')[0]);
   return row.total;
 }

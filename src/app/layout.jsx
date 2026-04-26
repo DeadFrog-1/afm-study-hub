@@ -1,17 +1,16 @@
 // ─────────────────────────────────────────────
 // Root Layout
 // ─────────────────────────────────────────────
-import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { TopBar } from '@/components/layout/TopBar';
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'AFM Study Hub',
   description: 'ACCA AFM Study Application — Offline First',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>

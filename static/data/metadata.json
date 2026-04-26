@@ -1,0 +1,145 @@
+{
+  "totalChapters": 18,
+  "chaptersScraped": 1,
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "Role of Financial Strategy",
+      "examWeight": "15%",
+      "status": "scraped",
+      "scrapedAt": "2026-04-26T06:00:00Z",
+      "stats": {
+        "pages": 25,
+        "questions": 0,
+        "quiz": 0,
+        "flashcards": 0,
+        "mindmapNodes": 0,
+        "imagesDownloaded": 0,
+        "videosDownloaded": 0
+      },
+      "aiEnhancementsStatus": "pending"
+    },
+    {
+      "id": "ch02",
+      "title": "Basic Investment Appraisal",
+      "examWeight": "15%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch03",
+      "title": "Security Valuation and the Cost of Capital",
+      "examWeight": "10%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch04",
+      "title": "Weighted Average Cost of Capital and Gearing",
+      "examWeight": "10%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch05",
+      "title": "CAPM and Betas",
+      "examWeight": "8%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch06",
+      "title": "Advanced Investment Appraisal",
+      "examWeight": "10%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch07",
+      "title": "Business Valuation",
+      "examWeight": "10%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch08",
+      "title": "Mergers and Acquisitions",
+      "examWeight": "10%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch09",
+      "title": "Corporate Reconstruction and Re-organisation",
+      "examWeight": "5%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch10",
+      "title": "Equity Issues",
+      "examWeight": "3%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch11",
+      "title": "Debt Issues",
+      "examWeight": "3%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch12",
+      "title": "Dividend Policy",
+      "examWeight": "3%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch13",
+      "title": "Options",
+      "examWeight": "8%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch14",
+      "title": "Foreign Exchange Risk Management",
+      "examWeight": "5%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch15",
+      "title": "Interest Rate Risk Management",
+      "examWeight": "5%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch16",
+      "title": "The Economic Environment for Multinationals",
+      "examWeight": "3%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch17",
+      "title": "International Operations",
+      "examWeight": "5%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    },
+    {
+      "id": "ch18",
+      "title": "Financial Statement Analysis",
+      "examWeight": "5%",
+      "status": "not_scraped",
+      "scrapedAt": null
+    }
+  ],
+  "totalPages": 25,
+  "totalPagesExpected": 300,
+  "progressPercent": 8
+}

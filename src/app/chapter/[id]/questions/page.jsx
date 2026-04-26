@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { Question } from '@/types';
 import { QuestionCard } from '@/components/questions/QuestionCard';
 
 export default function QuestionsPage() {
   const params = useParams();
-  const chapterId = params.id as string;
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const chapterId = params.id;
+  const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,7 +46,7 @@ function Skeleton() {
   );
 }
 
-function Empty({ chapterId }: { chapterId: string }) {
+function Empty({ chapterId }) {
   return (
     <div className="text-center py-16">
       <h2 style={{ color: 'var(--text-muted)' }}>No questions yet</h2>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AFM Study Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+:root{--bg:#F5F0F8;--bg2:#EDE8F5;--card:#FFF;--head:#6B0000;--t1:#2D1B4E;--t2:#5A4478;--mute:#8B7AA0;--acc:#800000;--acch:#6B0000;--bdr:#D8CEF0;--hlbg:#FFF8E7;--hlbd:#D4A017;--fmbg:#EFF6FF;--fmbd:#93C5FD;--impbg:#FFF0F0;--impbd:#CC0000;--smbg:#F9F7FF;--smbd:#A78BFA;--ok:#10B981;--warn:#F59E0B;--err:#EF4444;--gold:#FFD700;--purp:#7C3AED;--grn:#10B981;--sbw:260px;--sbwc:56px}
+[data-theme=dark]{--bg:#1A1025;--bg2:#241835;--card:#2D1F42;--head:#FF9999;--t1:#E8DFF5;--t2:#C4B5D9;--mute:#8B7AA0;--acc:#FF9999;--acch:#FFBBBB;--bdr:#3D2D55;--hlbg:#3D2E1E;--hlbd:#D4A017;--fmbg:#1E2A3A;--fmbd:#3B82F6;--impbg:#3D1515;--impbd:#FF6666;--smbg:#2A2440;--smbd:#7C3AED}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);line-height:1.8;-webkit-font-smoothing:antialiased}
+.shell{display:flex;height:100vh;overflow:hidden}
+.sb{display:flex;flex-direction:column;border-right:1px solid var(--bdr);width:var(--sbw);background:var(--bg2);flex-shrink:0;overflow:hidden;transition:width .3s}
+.sb.collapsed{width:var(--sbwc)}
+.sb.collapsed .hid,.sb.collapsed .ct,.sb.collapsed .sb-logo span,.sb.collapsed .streak span,.sb.collapsed .sb-ft span,.sb.collapsed .sb-ft a{display:none}
+.sb.collapsed .sb-link{justify-content:center;padding:.5rem}
+.sb-hdr{display:flex;align-items:center;justify-content:space-between;padding:.75rem;border-bottom:1px solid var(--bdr)}
+.sb-logo{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:var(--head);font-weight:700;font-size:.875rem}
+.sb-toggle{background:none;border:none;color:var(--mute);cursor:pointer;padding:.25rem;border-radius:4px;font-size:1rem}
+.sb-toggle:hover{opacity:.8}
+.sb-nav{flex:1;overflow-y:auto;padding:.5rem 0}
+.sb-link{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;font-size:.875rem;text-decoration:none;color:var(--t1);transition:background .15s}
+.sb-link:hover{background:var(--card);text-decoration:none}
+.sb-link.on{font-weight:600;color:var(--acc);background:var(--card)}
+.sb-link.off{opacity:.4}
+.sb-link .cn{width:1.5rem;text-align:center;font-size:.75rem;font-family:monospace;color:var(--mute);flex-shrink:0}
+.sb-link .ct{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-ft{border-top:1px solid var(--bdr);padding:.75rem;font-size:.75rem}
+.sb-ft a{display:flex;align-items:center;gap:.5rem;margin-top:.5rem;text-decoration:none;color:var(--mute)}
+.ec{display:flex;align-items:center;gap:.5rem;font-weight:600;padding:.25rem .5rem;border-radius:.5rem;background:var(--card);margin-top:.5rem}
+.streak{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;font-size:.875rem;color:var(--gold);font-weight:700}
+.main{display:flex;flex-direction:column;flex:1;overflow:hidden}
+.top{display:flex;align-items:center;gap:1rem;padding:0 1rem;border-bottom:1px solid var(--bdr);height:52px;background:var(--card);flex-shrink:0}
+.top-nav{display:flex;align-items:center;gap:.25rem;overflow-x:auto;flex:1}
+.tt{padding:.375rem .75rem;font-size:.875rem;border-radius:.375rem;text-decoration:none;white-space:nowrap;color:var(--t2);background:transparent;transition:background .15s;cursor:pointer;border:none;font-family:inherit}
+.tt:hover{background:var(--bg2);text-decoration:none}
+.tt.on{font-weight:600;color:var(--acc);background:var(--bg2)}
+.top-r{display:flex;align-items:center;gap:.75rem}
+.pb{font-size:.75rem;font-weight:600;padding:.25rem .5rem;border-radius:9999px;background:var(--bg2);color:var(--acc)}
+.tg{background:none;border:none;color:var(--mute);cursor:pointer;padding:.375rem;border-radius:.375rem;font-size:1.1rem}
+.tg:hover{opacity:.8}
+.content{flex:1;overflow-y:auto;padding:1.5rem;background:var(--bg)}
+.view{display:none;max-width:64rem;margin:0 auto}
+.view.show{display:block;animation:fi .3s ease-out}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+h1,h2,h3,h4{color:var(--head);font-weight:700;line-height:1.3;margin:1.5rem 0 .75rem}
+h1:first-child,h2:first-child{margin-top:0}
+h1{font-size:1.8rem}h2{font-size:1.5rem}h3{font-size:1.25rem}h4{font-size:1.1rem}
+a{color:var(--acc);text-decoration:none}a:hover{color:var(--acch);text-decoration:underline}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+th,td{padding:.5rem .75rem;border:1px solid var(--bdr);text-align:left}
+th{background:var(--bg2);font-weight:600;color:var(--head)}
+code,pre{font-family:'JetBrains Mono','Fira Code',monospace;font-size:.9em}
+pre{background:var(--fmbg);border:1px solid var(--fmbd);border-radius:8px;padding:1rem;overflow-x:auto}
+.chapter-content img{max-width:100%;height:auto;border-radius:6px;margin:.5rem 0}
+.ch-hl{background:var(--hlbg);border-left:4px solid var(--hlbd);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1rem 0}
+.ch-fm{background:var(--fmbg);border-left:4px solid var(--fmbd);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1rem 0;font-family:'JetBrains Mono',monospace}
+.ch-im{background:var(--impbg);border-left:4px solid var(--impbd);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1rem 0}
+.ch-sm{background:var(--smbg);border-left:4px solid var(--smbd);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1rem 0}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:4px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:2rem}
+.sc{border-radius:.5rem;padding:1rem;background:var(--card);border:1px solid var(--bdr)}
+.sc-icon{font-size:1.5rem;margin-bottom:.25rem}
+.sc-val{font-size:1.125rem;font-weight:700;color:var(--t1)}
+.sc-lbl{font-size:.75rem;color:var(--mute)}
+.cal{border-radius:.5rem;padding:1rem;margin-bottom:2rem;background:var(--card);border:1px solid var(--bdr)}
+.cal h3{margin:0 0 .75rem;font-size:.875rem;font-weight:600;color:var(--t2)}
+.cal-g{display:flex;flex-wrap:wrap;gap:.25rem}
+.cd{width:1.25rem;height:1.25rem;border-radius:2px}
+.ch-grid{display:grid;gap:.75rem}
+.cc{display:flex;align-items:center;gap:.75rem;padding:.75rem;border-radius:.5rem;text-decoration:none;background:var(--card);border:1px solid var(--bdr);color:var(--t1);transition:opacity .15s}
+.cc:hover{opacity:.9;text-decoration:none}.cc.off{opacity:.4}
+.cc-n{flex-shrink:0;width:2rem;height:2rem;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;background:var(--bg2);color:var(--acc)}
+.cc-i{flex:1;min-width:0}
+.cc-t{font-size:.875rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cc-m{font-size:.75rem;color:var(--mute)}
+.cc-ok{flex-shrink:0;color:var(--ok)}
+.qa{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-top:2rem}
+.qa a{display:flex;align-items:center;gap:.5rem;padding:.75rem;border-radius:.5rem;text-decoration:none;background:var(--card);border:1px solid var(--bdr);color:var(--t1);font-size:.875rem;font-weight:500;transition:opacity .15s}
+.qa a:hover{opacity:.9;text-decoration:none}
+.pn{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.pn-b{display:flex;align-items:center;gap:.25rem;padding:.375rem .75rem;border-radius:4px;font-size:.875rem;background:var(--card);border:1px solid var(--bdr);color:var(--t1);cursor:pointer}
+.pn-b:disabled{opacity:.3;cursor:default}
+.pn-c{font-size:.875rem;font-weight:500;color:var(--t2)}
+.cc2{border-radius:.5rem;padding:1.5rem;margin-bottom:1rem;background:var(--card);border:1px solid var(--bdr)}
+.cbtn{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:.5rem;font-size:.875rem;font-weight:500;width:100%;justify-content:center;cursor:pointer;background:var(--card);color:var(--t2);border:1px solid var(--bdr);transition:all .15s}
+.cbtn.marked{background:var(--ok);color:#fff;border-color:var(--ok)}
+.qo{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem;border-radius:.5rem;width:100%;text-align:left;font-size:.875rem;cursor:pointer;background:var(--bg2);border:1px solid var(--bdr);color:var(--t1);transition:all .15s}
+.qo:disabled{cursor:default}
+.qo.ok{background:rgba(16,185,129,.1);border-color:var(--ok)}
+.qo.no{background:rgba(239,68,68,.1);border-color:var(--err)}
+.qo .ol{font-weight:700;flex-shrink:0}
+.qo.ok .ol{color:var(--ok)}.qo.no .ol{color:var(--err)}
+.fc{position:relative;cursor:pointer;border-radius:.75rem;padding:2rem;min-height:250px;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--card);border:2px solid var(--bdr);transition:all .3s}
+.fc-l{position:absolute;bottom:.75rem;right:.75rem;font-size:.75rem;color:var(--mute)}
+.mm-n{display:flex;align-items:center;gap:.5rem;padding:.25rem 0;border:none;background:none;cursor:pointer;text-align:left;width:100%;color:var(--t1);font-family:inherit}
+.mm-n:hover{color:var(--acc)}
+.mm-c{margin-left:1.5rem;border-left:2px solid var(--bdr);padding-left:.75rem}
+.ap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+.ap-p{padding:1rem;border-radius:.5rem;font-size:.8rem}
+.ap-ai{background:var(--smbg);border:1px solid var(--smbd)}
+.ap-of{background:var(--hlbg);border:1px solid var(--hlbd)}
+.tc{text-align:center}.tm{color:var(--mute)}.ts{font-size:.875rem}.tx{font-size:.75rem}
+.mt2{margin-top:.5rem}.mt4{margin-top:1rem}.mt6{margin-top:1.5rem}.mt8{margin-top:2rem}
+.mb2{margin-bottom:.5rem}.mb4{margin-bottom:1rem}.mb6{margin-bottom:1.5rem}
+.py16{padding-top:4rem;padding-bottom:4rem}
+.fw{width:100%}.fb{font-weight:700}.fm{font-weight:500}.fs{font-weight:600}
+.rl{border-radius:.5rem}.hd{display:none !important}
+.f{display:flex}.fc2{flex-direction:column}.fw2{flex-wrap:wrap}.ic{align-items:center}.jb{justify-content:space-between}.jcc{justify-content:center}
+.sy4>*+*{margin-top:1rem}.sy6>*+*{margin-top:1.5rem}
+/* Summary styles */
+.summary-card{background:var(--smbg);border:1px solid var(--smbd);border-radius:.75rem;padding:1.25rem;margin-bottom:1rem}
+.summary-card h3{color:var(--head);margin:0 0 .5rem;font-size:1rem}
+.summary-card ul{padding-left:1.25rem;margin:.5rem 0}
+.summary-card li{margin-bottom:.375rem;font-size:.875rem;line-height:1.6}
+.summary-card .tip{background:var(--hlbg);border-left:3px solid var(--hlbd);padding:.5rem .75rem;border-radius:0 6px 6px 0;margin-top:.75rem;font-size:.8rem;color:var(--t2)}
+/* Quiz styles */
+.quiz-opt{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem;border-radius:.5rem;width:100%;text-align:left;font-size:.875rem;cursor:pointer;background:var(--bg2);border:1px solid var(--bdr);color:var(--t1);transition:all .15s;margin-bottom:.5rem}
+.quiz-opt:disabled{cursor:default}
+.quiz-opt.correct{background:rgba(16,185,129,.1);border-color:var(--ok)}
+.quiz-opt.wrong{background:rgba(239,68,68,.1);border-color:var(--err)}
+.quiz-opt .lbl{font-weight:700;flex-shrink:0;width:1.5rem}
+.quiz-opt.correct .lbl{color:var(--ok)}
+.quiz-opt.wrong .lbl{color:var(--err)}
+@media(min-width:768px){.stats{grid-template-columns:repeat(4,1fr)}.qa{grid-template-columns:repeat(4,1fr)}.ch-grid{grid-template-columns:repeat(2,1fr)}.ap{grid-template-columns:1fr 1fr}}
+@media(max-width:767px){.sb{width:var(--sbwc)}.sb .hid,.sb .ct,.sb .sb-logo span,.sb .streak span,.sb-ft span,.sb-ft a{display:none}.sb .sb-link{justify-content:center;padding:.5rem}.ap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sb" id="sidebar"></aside>
+  <div class="main">
+    <header class="top" id="topbar"></header>
+    <div class="content">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="view show" id="v-dash">
+        <h1>AFM Study Hub</h1>
+        <div class="stats">
+          <div class="sc"><div class="sc-icon" style="color:var(--acc)">🎯</div><div class="sc-val" id="sp">0%</div><div class="sc-lbl">Overall Progress</div></div>
+          <div class="sc"><div class="sc-icon" style="color:var(--gold)">🔥</div><div class="sc-val" id="ss">0 days</div><div class="sc-lbl">Study Streak</div></div>
+          <div class="sc"><div class="sc-icon" style="color:var(--grn)">⏱</div><div class="sc-val" id="sw">0h 0m</div><div class="sc-lbl">This Week</div></div>
+          <div class="sc"><div class="sc-icon" style="color:var(--purp)">📖</div><div class="sc-val" id="sc2">1 / 18</div><div class="sc-lbl">Chapters Scraped</div></div>
+        </div>
+        <div class="cal"><h3>Study Calendar (last 30 days)</h3><div class="cal-g" id="cal"></div></div>
+        <h2>Chapters</h2>
+        <div class="ch-grid" id="cgrid"></div>
+        <div class="qa">
+          <a href="#" onclick="go('content');return false">🎯 Daily Challenge</a>
+          <a href="#" onclick="go('quiz');return false">⚔ Quiz Battle</a>
+          <a href="#" onclick="go('exam');return false">🏆 Exam Simulation</a>
+          <a href="#" onclick="go('analytics');return false">📈 Analytics</a>
+        </div>
+      </div>
+
+      <!-- ═══ CHAPTER CONTENT ═══ -->
+      <div class="view" id="v-content">
+        <div class="mb6"><h1 id="ch-title">Loading...</h1><p class="ts" style="color:var(--mute)" id="ch-meta"></p></div>
+        <div class="pn">
+          <button class="pn-b" id="bp" onclick="chNav(-1)">← Previous</button>
+          <span class="pn-c" id="pc">Page 1 of 25</span>
+          <button class="pn-b" id="bn" onclick="chNav(1)">Next →</button>
+        </div>
+        <h2 id="pt" style="color:var(--head)"></h2>
+        <div class="cc2"><div class="chapter-content" id="phtml"></div></div>
+        <button class="cbtn" id="cbtn" onclick="toggleMark()">○ Mark as Understood</button>
+        <p class="tx tc mt2" style="color:var(--mute)" id="cprog"></p>
+        <p class="tx tc mt4" style="color:var(--mute)">Use ← → arrow keys to navigate pages · ↑ ↓ to scroll</p>
+      </div>
+
+      <!-- ═══ SUMMARY ═══ -->
+      <div class="view" id="v-summary">
+        <h1>Chapter Summary</h1>
+        <p class="ts mb6" style="color:var(--mute)">Key points for each section — review before your exam</p>
+        <div id="sumlist"></div>
+      </div>
+
+      <!-- ═══ QUESTIONS ═══ -->
+      <div class="view" id="v-questions">
+        <h1>Practice Questions</h1>
+        <p class="ts mb6" style="color:var(--mute)">Type your answer, then reveal the solution</p>
+        <div id="qlist" class="sy6"></div>
+      </div>
+
+      <!-- ═══ QUIZ ═══ -->
+      <div class="view" id="v-quiz">
+        <div class="f ic jb mb6"><h1>Chapter Quiz</h1><div class="pb" id="qscore"></div></div>
+        <div id="quizlist" class="sy4"></div>
+      </div>
+
+      <!-- ═══ FLASHCARDS ═══ -->
+      <div class="view" id="v-flash">
+        <h1>Flashcards</h1>
+        <div id="fcbox" class="mt6"></div>
+      </div>
+
+      <!-- ═══ MIND MAP ═══ -->
+      <div class="view" id="v-mind">
+        <h1>Mind Map</h1>
+        <p class="ts mb4" style="color:var(--mute)">Click sections to expand/collapse</p>
+        <div id="mmbox"></div>
+      </div>
+
+      <!-- ═══ CR EXAM ═══ -->
+      <div class="view" id="v-cr">
+        <h1>CR Exam Case Studies</h1>
+        <p class="ts mb6" style="color:var(--mute)">Case study questions</p>
+        <div id="crlist" class="sy6"></div>
+      </div>
+
+      <!-- ═══ PLACEHOLDERS ═══ -->
+      <div class="view" id="v-exam"><h1>Exam Simulation</h1><div class="cc2 tc py16"><p style="color:var(--mute)">Full 3h 15m AFM exam simulation. Requires scraped content.</p></div></div>
+      <div class="view" id="v-analytics"><h1>Study Analytics</h1><div class="cc2 tc py16"><p style="color:var(--mute)">Streaks, quiz scores, time breakdown. Requires study data.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// AFM Study Hub — Single File (vanilla JS)
+// ═══════════════════════════════════════════════
+
+var CHAPTER = {"id": "ch01", "title": "Role of Financial Strategy", "examWeight": "15%", "pages": [{"id": "ch01-p01", "title": "Visual Overview", "contentHtml": "<h3>Visual Overview</h3><hr><p><strong>Objective:</strong> To introduce the role and operating environment of the senior financial executive.</p><p style=\"text-align:center\"><img alt=\"Chapter 1 Visual Overview\" src=\"https://s3.amazonaws.com/wmx-api-production/courses/86952/images/2024-25_AFM-ST_Ch03_Pg27_img001.png\"></p>", "mediaRefs": []}, {"id": "ch01-p02", "title": "1.1.1 To Achieve Organisational Goals", "contentHtml": "<h3>1.1 To Achieve Organisational Goals</h3><hr><p>A company will usually have a <strong>vision</strong>, whether articulated or not, that is the foundation of the company and should set out its <strong>direction and values</strong>.</p><p>The corporate mission should set out what the organisation exists to do and establish clear company <strong>aims and goals</strong>.</p><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td><div><strong>Strategy</strong> \u2013 a plan of action designed to achieve a long-term organisational goal or aim.</div></td></tr></tbody></table><p>A <strong>corporate strategy</strong> might ask:</p><ul><li>What business should we be in?<ul class=\"dash\"><li>What are our special organisational abilities through which we can create shareholder value?</li><li>What business sector are these abilities best applied to?</li></ul></li><li>How should we allocate our various capitals to our business(es)?</li><li>How can we best design our organisation? Should we be centralised or decentralised?</li><li>How should we manage risk and return and create incentives?</li></ul><p>A <strong>business strategy</strong> might ask:</p><ul><li>What corporate culture will best assist in achieving our aims?</li><li>How should we compete?</li><li>How should we organise our strategic business units?</li></ul><p>An <strong>operational strategy</strong> might ask:</p><ul><li>How should our strategic business units operate?</li><li>What functions should be outsourced?</li><li>What incentive schemes should be offered to staff?</li></ul>", "mediaRefs": []}, {"id": "ch01-p03", "title": "1.1.2 Financial Management", "contentHtml": "<h3>1.2 Financial Management</h3><hr><p>The objective of a <strong>financial strategy</strong> is to achieve a financial goal or aim and usually includes the utilisation and management of financial resources through the process of financial management. Financial strategies include:</p><ul><li>The investment decision;</li><li>The financing decision;</li><li>The dividend decision;</li><li>Risk management.</li></ul><p>Strategies can be long or short term. For example, liquidity management is a short-term financial strategy, whereas gearing and dividend decisions are long term.</p><p>A financial resource is money available to a business (e.g. cash, borrowing capacity, investments or credit lines). Financial resources are used with the other <strong>capitals</strong> (human, intellectual, etc) to achieve strategic objectives. Managing \"financial resources\" means managing the company's assets and liabilities, whether monetary or nonmonetary.</p><p>Strategies may be expressed as plans, statements, budgets and forecasts (including cash flow forecasts). The achievement of strategies requires internal controls. Collectively, such strategies and controls amount to the management of financial resources.</p><p><strong>Non-financial strategies</strong> include human resources (HR), marketing, product development, etc.</p>", "mediaRefs": []}, {"id": "ch01-p04", "title": "1.2.1 Corporate Objectives in Practice", "contentHtml": "<h3>2.1 Corporate Objectives in Practice</h3><hr><p>In practice, companies are likely to have a variety of different objectives, which may include a number of the following:</p><ul><li>profit targets;</li><li>market share targets;</li><li>share price growth;</li><li>local and environmental concerns;</li><li>contented workforce;</li><li>meeting short-term targets; and</li><li>long-term plans.</li></ul><p>These objectives can be classified as follows:</p><ul><li><strong>Profit goals</strong> \u2013 objectives which lead directly to increased profits (e.g. cost reduction measures);</li><li><strong>Surrogate profit goals</strong> \u2013 objectives which lead indirectly to increased profits (e.g. maintaining a contented workforce);</li><li><strong>Constraints on profit</strong> \u2013 objectives which restrict profit (e.g. ensuring that the company's operations do not harm the environment);</li><li><strong>Dysfunctional goals</strong> \u2013 objectives which do not provide a benefit even in the long run (e.g. the pursuit of market leadership at all costs).</li></ul><p>A company may aim at either <em>maximising or satisficing</em> these objectives:</p><ul><li>Maximising involves seeking the best possible outcome;</li><li>Satisficing involves finding an adequate outcome.</li></ul><p>Criticisms of profit maximisation include the following:</p><ul class=\"list-xmarks\"><li>Maximising shareholder wealth ignores the interests of other stakeholders such as employees, customers and arguably, society.</li><li>In the case of <em>unlisted</em> companies, even the shareholders may not require maximised returns. For example, some closely held companies are run as \"lifestyle firms\" whose main objective is to provide their owners with the opportunity to earn a living while pursuing a particular lifestyle.</li></ul>", "mediaRefs": []}, {"id": "ch01-p05", "title": "1.2.2 Maximisation of Shareholder Wealth", "contentHtml": "<h3>2.2 Maximisation of Shareholder Wealth</h3><hr><p>Maximising shareholder wealth is a single corporate objective that can help managers in decision-making.</p><p>Shareholder wealth is the combination of dividend and share price growth, referred to as Total Shareholder Returns (TSR).</p><p>The objective of maximising shareholder wealth can be justified in the following ways:</p><ul class=\"list-checkmarks\"><li>The company that provides the highest returns for its investors will find it easiest to raise new finance and grow. If a company does not provide competitive returns, it will inevitably decline.</li><li>The directors of a company have a legal duty to run the company on behalf of the shareholders. It is generally considered a reasonable assumption that the shareholders of <em>listed</em> companies (mainly institutional investors) seek to maximise wealth.</li></ul><div class=\"reading-example-expander expander-wrapper\"><h5 class=\"expander-link arrow-controls closed\">Activity 1 NPV, Payback and Time</h5><hr><h4>Required:</h4><hr><p><strong>Discuss whether the maximisation of net present value (NPV) will always maximise shareholder's wealth, including reference to payback and the issue of long- versus short-term returns.</strong></p></div>", "mediaRefs": []}, {"id": "ch01-p06", "title": "1.2.3 Communication to Stakeholders", "contentHtml": "<h3>2.3 Communication to Stakeholders</h3><hr><p>Effective communication and communication strategy are essential to implementing financial policies and realising corporate goals. Communications to stakeholders must take into account:</p><ul><li>Whether they are internal or external stakeholders;</li><li>How they rank in terms of power over, and level of interest in, the entity's activities;</li><li>The purpose of the communication;</li><li>The most appropriate medium.</li></ul><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-exam-advice\">Exam advice</span></th></tr></thead><tbody><tr><td><div><p>Question 1 in the exam typically requires a report to a board of directors. Marks for the professional skill of communication will be available for:</p><ul><li>General report format and structure;</li><li>Style, language and clarity;</li><li>Effectiveness of communication.</li></ul></div></td></tr></tbody></table>", "mediaRefs": []}, {"id": "ch01-p07", "title": "1.3.1 Agency Theory", "contentHtml": "<h3>3.1 Agency Theory</h3><hr><p>Agency theory examines the duties and conflicts that occur between the parties in a company that has an agency relationship, for example:</p><p style=\"text-align:center\"><img alt=\"Agency Theory Diagram\" src=\"https://s3.amazonaws.com/wmx-api-production/courses/86952/images/2020_ACCA_AFM_ST_Chapter01_pg-30_img001.png\"></p><p>A company can be viewed as a set of contracts between these various interest groups. The company will only succeed if the interests of each group are met to at least an adequate level.</p>", "mediaRefs": []}, {"id": "ch01-p08", "title": "1.3.2 Stakeholders", "contentHtml": "<h3>3.2 Stakeholders</h3><hr><p>Companies are made up of a variety of different interest groups or stakeholders, all of whom are likely to have varying interests in and objectives for the company.</p><p>While shareholders are the primary stakeholder, modern corporate governance suggests that directors should bear in mind the objectives of a broader range of interested parties. Directors are therefore expected to show responsibility:</p><ul><li>to creditors (e.g. reasonable payment terms);</li><li>to employees (e.g. health and safety); and</li><li>to customers (e.g. reliable products/services at a fair price);</li><li>to society (e.g. minimising pollution, investing in social projects).</li></ul><p>Therefore, the corporate objective may become satisficing (i.e. producing satisfactory rather than maximum returns for stakeholders). With the rise of the \"ethical investor\" on world stock markets, many shareholders are willing to accept slightly lower returns in exchange for the companies they invest in following a wide range of both financial and non-financial objectives.</p>", "mediaRefs": []}, {"id": "ch01-p09", "title": "1.3.3 Directors and Shareholders", "contentHtml": "<h3>3.3 Directors and Shareholders</h3><hr><h4>3.3.1 The Agency Issue</h4><p>In larger companies, the shareholders entrust the management of the company to the directors \u2013 referred to as the <strong>separation of ownership and control</strong>. The directors are employed to manage the company on behalf of the shareholders and are duty-bound to promote the company's success.</p><p>Directors will have personal objectives, such as:</p><ul><li>increasing personal remuneration levels;</li><li>maximising bonus payments;</li><li>empire building;</li><li>job security.</li></ul><p>A small number of directors have been guilty of not fulfilling their duties by:</p><ul><li>Creative accounting;</li><li>Hiding corporate activity (e.g. using special purpose vehicles);</li><li>Takeovers \u2013 protecting jobs rather than shareholder interests;</li><li>Disregard for environmental issues.</li></ul><h4>3.3.2 Agency Costs</h4><p>If directors follow personal objectives which conflict with those of their shareholders, this leads to <strong>agency costs</strong> (i.e. lost potential returns for shareholders).</p><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td>Corporate governance \u2013 the system by which companies are directed and controlled.</td></tr></tbody></table><p>Good corporate governance procedures should be implemented to minimise the effect of agency costs.</p>", "mediaRefs": []}, {"id": "ch01-p10", "title": "1.3.4 Goal Congruence", "contentHtml": "<h3>3.4 Goal Congruence</h3><hr><p>Goal congruence is when the interests of stakeholders align with the best interests of the company as a whole.</p><p>Methods of encouraging goal congruence between directors and shareholders:</p><ul><li><strong>Executive Share Option Plans</strong> (ESOPs) \u2013 directors and shareholders will benefit from a rising share price.</li><li><strong>Long-term incentive plans</strong> \u2013 paying directors a bonus if the company's performance is good over several years.</li><li><strong>Transparency</strong> in corporate reporting \u2013 ensures accurate and comprehensive information.</li><li>Improved <strong>corporate governance</strong> (e.g. appointing truly independent non-executive directors).</li><li>Increased <strong>shareholder activism</strong> (e.g. using voting rights).</li></ul>", "mediaRefs": []}, {"id": "ch01-p11", "title": "1.4.1 Ethical Contexts for the Financial Executive or Adviser", "contentHtml": "<h3>4.1 Ethical Contexts for the Financial Executive or Adviser</h3><hr><h4>4.1.1 Main Principles</h4><p>The main principles of ethical conduct are:</p><ul><li>Act with integrity.</li><li>Be a credit to the profession.</li><li>Use independent professional judgement.</li><li>Be competent.</li></ul><h4>4.1.2 Fundamental Responsibilities</h4><p>A senior financial executive/adviser should:</p><ul class=\"list-checkmarks\"><li>Know and comply with laws, regulations, ethical codes and professional standards.</li></ul><ul class=\"list-xmarks\"><li>Not knowingly participate or assist others in violating applicable regulations or ethical codes.</li></ul><h4>4.1.3 Relationship with the Profession</h4><p>A senior financial executive/adviser should:</p><ul class=\"list-checkmarks\"><li>Use ACCA designation with dignity.</li></ul><ul class=\"list-xmarks\"><li>Not engage in any act that adversely reflects on one's honesty, trustworthiness or professional competence.</li></ul><h4>4.1.6 Compliance with Anti\u2013Money-Laundering (AML) Legislation</h4><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td><p><strong>Money laundering</strong> \u2013 the process by which the proceeds of crime are converted into assets which appear to have a legitimate origin.</p></td></tr></tbody></table>", "mediaRefs": []}, {"id": "ch01-p12", "title": "1.4.2 Ethical Decision-Making", "contentHtml": "<h3>4.2 Ethical Decision-making</h3><hr><h4>4.2.1 Rest's Model</h4><p>This four-component model is as follows:</p><table class=\"table-style4\"><tbody><tr><td><strong>Step 1</strong></td><td></td><td>It must be recognised that there is a moral issue involved.</td></tr><tr><td><strong>Step 2</strong></td><td></td><td>The decision-maker must be able to select an appropriate action.</td></tr><tr><td><strong>Step 3</strong></td><td></td><td>The decision-maker must attach priority to moral values rather than self-interest.</td></tr><tr><td><strong>Step 4</strong></td><td></td><td>The decision-maker must have sufficient moral strength to implement the resolution.</td></tr></tbody></table><h4>4.2.2 Albrecht's Ethical Development Model (EDM)</h4><table class=\"table-style4\"><tbody><tr><td><p><strong>1. Personal ethical understanding</strong></p></td><td>A foundation level. Appreciates the difference between right and wrong.</td></tr><tr><td><p><strong>2. Application of ethics to business situations</strong></p></td><td>Translating and applying ethics to the business context.</td></tr><tr><td><p><strong>3. Ethical courage</strong></p></td><td>Requires individuals to develop ethical strength and moral conviction.</td></tr><tr><td><p><strong>4. Ethical leadership</strong></p></td><td>The ethical leader can inspire others to develop their ethical awareness.</td></tr></tbody></table>", "mediaRefs": []}, {"id": "ch01-p13", "title": "1.4.3 Ethical Decision-Making Models (EDMM)", "contentHtml": "<h3>4.3 Ethical Decision-making Models (EDMM)</h3><hr><h4>4.3.2 Tucker's 5-Question Model</h4><p>Tucker's model asks five questions about a business decision which must be answered in the affirmative to confirm that the decision is ethical. Is the decision:</p><ol class=\"decimal\"><li>Profitable (But compared to what?)</li><li>Legal (What framework was used?)</li><li>Fair (From whose perspective? Consider stakeholders.)</li><li>Right (Based on what ethical position?)</li><li>Sustainable (Or environmentally sound?)</li></ol><h4>4.3.3 ACCA Ethical Conflict Resolution</h4><p>Applying the ACCA's <em>Code of Ethics and Conduct</em>, professional accountants should consider:</p><ul><li>the relevant facts;</li><li>the ethical issues involved;</li><li>related fundamental principles;</li><li>the organisation's established procedures;</li><li>the action that can be followed and the probable outcome;</li><li>alternative courses of action and their consequences; and</li><li>internal and external sources of consultation available.</li></ul>", "mediaRefs": []}, {"id": "ch01-p14", "title": "1.4.4 Ethics: Agency Issues and Stakeholder Conflicts", "contentHtml": "<h3>4.4 Ethics: Agency Issues and Stakeholder Conflicts</h3><hr><h4>4.4.1 Agency Issues and Ethics</h4><p>Agency issues are particularly likely to affect a quoted company's ethical framework where there is significant divorce of ownership and control.</p><p>If the directors come under pressure from shareholders to relax the company's ethical guidelines, appropriate responses could include:</p><ul><li>quoting relevant legislation which imposes penalties for contravention;</li><li>encouraging ethical investment funds to take shareholdings in the company.</li></ul><h4>4.4.2 Stakeholder Conflicts</h4><p>Although shareholders are a company's primary stakeholder, there are also potential conflicts with other groups:</p><ul><li>Consumers may boycott the company's products if made in exploitative conditions;</li><li>Governments may take action against aggressive tax avoidance schemes.</li></ul>", "mediaRefs": []}, {"id": "ch01-p15", "title": "1.5.1 Sustainability", "contentHtml": "<h3>5.1 Sustainability</h3><hr><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definitions</span></th></tr></thead><tbody><tr><td><div><p><strong>Sustainability</strong> \u2013 a process of change in which the exploitation of resources, the direction of investments, the orientation of technological development and institutional change are made consistent with future as well as present needs.</p><p><strong>Corporate sustainability</strong> \u2013 a business approach that creates long-term shareholder value by embracing opportunities and managing risks from economic, environmental and social developments.</p><p><strong>Sustainable development</strong> \u2013 development that meets the needs of the present without compromising the ability of future generations to meet their own needs.</p><p><strong>Sustainable finance</strong> \u2013 the process of taking ESG considerations into account when making investment decisions.</p></div></td></tr></tbody></table><h4>5.1.2 ESG Investing</h4><p>ESG investing prioritises ESG factors and performance alongside the profits of an organisation. It considers the material risks and opportunities businesses face related to these factors.</p>", "mediaRefs": []}, {"id": "ch01-p16", "title": "1.5.2 Triple Bottom-Line Reporting (TBL or 3BL)", "contentHtml": "<h3>5.2 Triple Bottom-Line Reporting (TBL or 3BL)</h3><hr><p>Triple bottom-line accounting attempts to measure and report corporate performance against economic, social and environmental benchmarks.</p><table class=\"table-style1\"><tbody><tr><td style=\"text-align:center;width:50%;\"><strong>Advantages</strong></td><td style=\"text-align:center;width:50%;\"><strong>Disadvantages</strong></td></tr><tr><td><ul class=\"list-checkmarks\"><li>Makes transparent decisions that consider effects on environment, people and financial capital.</li><li>More informed decision making.</li><li>Improved relationships with key stakeholders.</li><li>Specific commercial advantages.</li><li>Enhancement of reputation and brand.</li></ul></td><td><ul class=\"list-xmarks\"><li>Few standards for measuring these effects.</li><li>Significant variability in disclosure.</li><li>Increase in annual reporting costs.</li><li>Potential exposure to risk and liability.</li><li>Potential bias in voluntary presentation.</li></ul></td></tr></tbody></table>", "mediaRefs": []}, {"id": "ch01-p17", "title": "1.5.3 Modern Approaches to Reporting ESG Issues", "contentHtml": "<h3>5.3 Modern Approaches to Reporting ESG Issues</h3><hr><ul><li><strong>The Integrated Reporting Framework</strong> aims to provide a holistic view by showing the impact on six capitals.</li><li><strong>The Task Force on Climate Related Disclosures (TCFD)</strong> issued climate disclosure recommendations.</li><li>The <strong>GRI</strong> issues voluntary global standards for sustainability transparency.</li><li><strong>The International Sustainability Standards Board</strong> was set up by the IFRS foundation in November 2021. IFRS-S1 deals with general sustainability disclosures, while IFRS-S2 deals with climate related disclosures.</li><li>Governments may develop their own sustainability standards (e.g. the EU has mandatory standards for larger listed companies from 2024).</li></ul>", "mediaRefs": []}, {"id": "ch01-p18", "title": "1.6.1 Need for Risk Management", "contentHtml": "<h3>6.1 Need for Risk Management</h3><hr><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td><div><strong>Risk</strong> \u2013 the variability (volatility) of returns, both positive and negative, that can be quantified through statistical measures.</div></td></tr></tbody></table><h4>6.1.1 Theory</h4><p>Risk management is about decisions made to change the volatility of returns. Risk should be managed if it increases the value of a company.</p><h4>6.1.2 In Practice</h4><p>Implementing a default policy of hedging <strong>all</strong> risks is unlikely to be effective because:</p><ul><li>Hedging may give short-run but not long-run protection.</li><li>Hedging incurs costs.</li><li>The shareholders may have already hedged many risks through portfolio diversification.</li></ul><p>Why do many organisations engage in risk management?</p><ul><li>Privately held companies \u2013 shareholders may have significant wealth in one company.</li><li>Management bonuses are exposed to total risk.</li><li>Progressive corporate tax systems \u2013 smoothing profits reduces tax burden.</li><li>Reduction in cost of capital.</li><li>Financial distress costs.</li></ul>", "mediaRefs": []}, {"id": "ch01-p19", "title": "1.6.2 Conflicts Between Equity and Debt Investors", "contentHtml": "<h3>6.2 Conflicts Between Equity and Debt Investors</h3><hr><p>Equity investors absorb the company's level of business risk. Their downside risk is restricted by limited liability.</p><p>Debt investors receive fixed contractual payments. Their primary risk is default risk/credit risk.</p><p>The different positions can lead to differing attitudes towards risk-taking:</p><ul><li>Shareholders may develop an \"appetite\" for risk.<ul class=\"dash\"><li>If high-risk strategies succeed, equity rises in value.</li><li>If the gamble fails, shareholders can walk away under limited liability.</li></ul></li><li>Debt investors would be highly risk averse as any fall in asset value would reduce recoverability of their debt.</li></ul>", "mediaRefs": []}, {"id": "ch01-p20", "title": "1.6.3 Types of Risk and Risk Mitigation", "contentHtml": "<h3>6.3 Types of Risk and Risk Mitigation</h3><hr><h4>6.3.1 Business and Financial Risk</h4><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td><strong>Business risk</strong> \u2013 the risk associated with volatility of operating cash flows.</td></tr></tbody></table><p>Business risk is driven by sales volatility and the level of operational gearing.</p><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td><strong>Financial risk</strong> \u2013 the risk associated with how a company finances its operations.</td></tr></tbody></table><p>Financial risk concerns the volatility of returns to equity due to the priority of fixed interest payments on debt.</p><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td><strong>Credit (default) risk</strong> \u2013 the potential that a borrower will fail to meet its obligations.</td></tr></tbody></table><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td><strong>Reputation risk</strong> \u2013 the risk of failure to meet stakeholder expectations.</td></tr></tbody></table><h4>6.3.2 Operational Risk</h4><table class=\"table-style1\"><thead><tr><th style=\"text-align:left;\"><span class=\"reading-definition\">Definition</span></th></tr></thead><tbody><tr><td><div><strong>Operational risk</strong> \u2013 the risk of loss resulting from inadequate or failed internal processes, people and systems or from external events.</div></td></tr></tbody></table>", "mediaRefs": []}, {"id": "ch01-p21", "title": "1.6.4 Risk Mitigation, Hedging and Diversification", "contentHtml": "<h3>6.4 Risk Mitigation, Hedging and Diversification</h3><hr><ul><li>Risk <strong>mitigation</strong> is any action or strategy to reduce the impact or likelihood of risks or threats.</li><li>Risk <strong>hedging</strong> is a financial strategy to reduce potential losses associated with adverse price movements.</li><li>Risk <strong>diversification</strong> refers to diversification either domestically into other industries or other countries.</li></ul><p>Corporate diversification may be justified when:</p><ul><li>significant synergy may be obtained through buying competitors, suppliers or distributors;</li><li>diversified groups have lower financial distress risk, may achieve an enhanced credit rating and may pay less tax.</li></ul>", "mediaRefs": []}, {"id": "ch01-p22", "title": "1.6.5 Developing a Framework for Risk Management", "contentHtml": "<h3>6.5 Developing a Framework for Risk Management</h3><hr><h4>6.5.1 Elements</h4><p>A risk management process should incorporate:</p><p style=\"text-align:center\"><img alt=\"Risk Management Framework\" src=\"https://s3.amazonaws.com/wmx-api-production/courses/86952/images/2020_ACCA_AFM_ST_Chapter01_pg-47_img001.png\"></p><h4>6.5.2 Risk Management Standard</h4><p>The Institute of Risk Management published a Risk Management Standard in 2002, which depicts the risk management process as follows:</p><p style=\"text-align:center\"><img alt=\"Risk Management Standard\" src=\"https://s3.amazonaws.com/wmx-api-production/courses/86952/images/2020_ACCA_AFM_ST_Chapter01_pg-48_img001.png\"></p>", "mediaRefs": []}, {"id": "ch01-p23", "title": "Syllabus Coverage", "contentHtml": "<h3>Syllabus Coverage</h3><hr><p>This chapter covers the following Learning Outcomes.</p><h4>A. Role of the Senior Financial Adviser in the Multinational Organisation</h4><ol class=\"decimal\"><li><strong>The role and responsibility of senior financial executive/adviser</strong></li></ol><ol class=\"loweralpha2\"><li>Develop strategies for the achievement of the company's goals.</li><li>Recommend strategies for the management of financial resources.</li><li>Advise the board in setting financial goals and policy development.</li></ol><ol class=\"decimal\" start=\"2\"><li><strong>Financial strategy formulation</strong></li></ol><ol class=\"loweralpha2\"><li>Explain the theoretical and practical rationale for risk management.</li><li>Assess the organisation's exposure to business and financial risk.</li><li>Develop a framework for risk management.</li></ol><ol class=\"decimal\" start=\"3\"><li><strong>Corporate ESG and ethical issues</strong></li></ol>", "mediaRefs": []}, {"id": "ch01-p24", "title": "Summary and Quiz", "contentHtml": "<h3>Summary and Quiz</h3><ul><li>A strategy is a plan of action designed to achieve a long-term organisational goal or aim.</li><li>The objective of a financial strategy is to achieve a financial goal or aim.</li><li>A company may aim to maximise or satisfice corporate objectives.</li><li>Most traditional finance theory assumes a company's objective is to maximise shareholder wealth.</li><li>Directors should also consider other stakeholders and pursue non-financial objectives.</li><li>In practice, managers may have personal objectives that conflict with their responsibilities as agents, creating agency costs.</li><li>Well-designed remuneration systems and good corporate governance should reduce agency costs.</li><li>Corporate sustainability creates long-term shareholder value by embracing opportunities and managing risks.</li><li>Business risk is the risk associated with volatility of operating cash flows.</li><li>Financial risk is the risk associated with the company's capital structure.</li></ul><hr><div class=\"test-button\"><a href=\"#exams/details/274463\">Chapter 1 Quiz</a></div>", "mediaRefs": []}, {"id": "ch01-p25", "title": "Technical Articles", "contentHtml": "<h3>Technical Articles</h3><hr><p>ACCA provide technical articles and other resources to guide and help students.</p><p>This chapter includes the relevant content of the following related technical articles:</p><ul><li><a href=\"https://www.accaglobal.com/gb/en/student/exam-support-resources/professional-exams-study-resources/p4/technical-articles/green-finance.html\" target=\"_blank\">Green finance (s.5)</a></li><li><a href=\"https://www.accaglobal.com/gb/en/student/exam-support-resources/professional-exams-study-resources/p4/technical-articles/risk-management---understanding-why-is-as-important-as-understanding-how.html\" target=\"_blank\">Risk management</a> (s.6)</li></ul>", "mediaRefs": []}]};
+
+// ── Mindmap Data ──
+var MINDMAP = {"id":"root","label":"Chapter 1: Role of Financial Strategy","children":[
+  {"id":"s1","label":"1.1 Strategies","children":[
+    {"id":"ch01-p02","label":"1.1.1 To Achieve Organisational Goals"},
+    {"id":"ch01-p03","label":"1.1.2 Financial Management"}
+  ]},
+  {"id":"s2","label":"1.2 Corporate Objectives","children":[
+    {"id":"ch01-p04","label":"1.2.1 Corporate Objectives in Practice"},
+    {"id":"ch01-p05","label":"1.2.2 Maximisation of Shareholder Wealth"},
+    {"id":"ch01-p06","label":"1.2.3 Communication to Stakeholders"}
+  ]},
+  {"id":"s3","label":"1.3 Conflicts of Interest","children":[
+    {"id":"ch01-p07","label":"1.3.1 Agency Theory"},
+    {"id":"ch01-p08","label":"1.3.2 Stakeholders"},
+    {"id":"ch01-p09","label":"1.3.3 Directors and Shareholders"},
+    {"id":"ch01-p10","label":"1.3.4 Goal Congruence"}
+  ]},
+  {"id":"s4","label":"1.4 Ethics","children":[
+    {"id":"ch01-p11","label":"1.4.1 Ethical Contexts"},
+    {"id":"ch01-p12","label":"1.4.2 Ethical Decision-Making"},
+    {"id":"ch01-p13","label":"1.4.3 EDMM Models"},
+    {"id":"ch01-p14","label":"1.4.4 Agency Issues & Ethics"}
+  ]},
+  {"id":"s5","label":"1.5 ESG Issues","children":[
+    {"id":"ch01-p15","label":"1.5.1 Sustainability"},
+    {"id":"ch01-p16","label":"1.5.2 Triple Bottom-Line"},
+    {"id":"ch01-p17","label":"1.5.3 Modern ESG Reporting"}
+  ]},
+  {"id":"s6","label":"1.6 Risk Management","children":[
+    {"id":"ch01-p18","label":"1.6.1 Need for Risk Management"},
+    {"id":"ch01-p19","label":"1.6.2 Equity vs Debt Conflicts"},
+    {"id":"ch01-p20","label":"1.6.3 Types of Risk"},
+    {"id":"ch01-p21","label":"1.6.4 Hedging & Diversification"},
+    {"id":"ch01-p22","label":"1.6.5 Risk Framework"}
+  ]}
+]};
+
+// ── Summary Data ──
+var SUMMARIES = {"ch01-p01": {"title": "Visual Overview", "points": ["This chapter introduces the role and operating environment of the senior financial executive.", "Covers strategies, corporate objectives, agency theory, ethics, ESG, and risk management.", "Sets the foundation for the entire AFM syllabus."], "examTip": "Understand how all topics in this chapter connect \u2014 they form the basis for exam questions."}, "ch01-p02": {"title": "To Achieve Organisational Goals", "points": ["A company has a vision that sets out its direction and values.", "Strategy = a plan of action designed to achieve a long-term organisational goal.", "Corporate strategy asks: What business? How to allocate capital? How to organise?", "Business strategy asks: What culture? How to compete?", "Operational strategy asks: How to operate? What to outsource?"], "examTip": "Know the distinction between corporate, business, and operational strategy."}, "ch01-p03": {"title": "Financial Management", "points": ["Financial strategy includes: investment, financing, dividend, and risk management decisions.", "Strategies can be long-term (gearing, dividends) or short-term (liquidity).", "Financial resources = money available (cash, borrowing, investments, credit).", "Non-financial strategies include HR, marketing, product development."], "examTip": "The four key financial decisions are a common exam topic."}, "ch01-p04": {"title": "Corporate Objectives in Practice", "points": ["Companies have various objectives: profit targets, market share, share price growth.", "Objectives classify as: profit goals, surrogate profit goals, constraints, dysfunctional goals.", "Maximising vs satisficing: best possible vs adequate outcome.", "Profit maximisation criticism: ignores other stakeholders."], "examTip": "Be able to classify objectives and discuss criticisms of profit maximisation."}, "ch01-p05": {"title": "Maximisation of Shareholder Wealth", "points": ["Shareholder wealth = dividends + share price growth = Total Shareholder Returns (TSR).", "Highest-returning companies find it easiest to raise finance and grow.", "Directors have a legal duty to run the company on behalf of shareholders.", "NPV maximisation may not always maximise shareholder wealth (payback, short vs long term)."], "examTip": "Discuss whether NPV always maximises shareholder wealth \u2014 exam favourite."}, "ch01-p06": {"title": "Communication to Stakeholders", "points": ["Must consider: internal vs external stakeholders, power and interest levels.", "Purpose of communication and most appropriate medium matter.", "Exam questions typically require a report to a board of directors.", "Marks available for: format, style, language, clarity, effectiveness."], "examTip": "Practice writing professional reports \u2014 marks for communication skills."}, "ch01-p07": {"title": "Agency Theory", "points": ["Agency relationship: principal delegates decision-making to an agent.", "Key relationships: shareholders \u2194 directors, shareholders \u2194 debt holders, company \u2194 employees.", "Company = set of contracts between interest groups.", "Company succeeds only if each group's interests are met adequately."], "examTip": "Know all agency relationships and potential conflicts."}, "ch01-p08": {"title": "Stakeholders", "points": ["Stakeholders = any group with interest in company activities.", "Internal: directors, managers, employees. External: shareholders, creditors, government.", "Stakeholder mapping by power and interest (Mendelow's matrix).", "Different stakeholders may have conflicting objectives."], "examTip": "Apply Mendelow's matrix to scenario-based questions."}, "ch01-p09": {"title": "Directors and Shareholders", "points": ["Separation of ownership (shareholders) and control (directors) \u2014 the agency issue.", "Directors may pursue own interests: empire building, excessive pay, risk aversion.", "Shareholders face difficulty monitoring directors' actions (information asymmetry).", "Agency costs include: monitoring costs, bonding costs, residual loss."], "examTip": "Understand agency costs and how they arise from separation of ownership/control."}, "ch01-p10": {"title": "Goal Congruence", "points": ["Goal congruence = interests of stakeholders align with company's best interests.", "Methods: performance-related pay, share options, threat of takeover, AGM voting.", "Remuneration committees help align director pay with shareholder interests.", "Corporate governance codes promote goal congruence."], "examTip": "Know methods of achieving goal congruence and their limitations."}, "ch01-p11": {"title": "Ethical Contexts", "points": ["Main ethical principles: integrity, professional competence, confidentiality, objectivity.", "ACCA Code of Ethics and Conduct applies to all members.", "Ethical dilemmas arise when principles conflict.", "Professional behaviour: comply with laws, avoid actions that discredit the profession."], "examTip": "Know the main ethical principles \u2014 tested in both Section A and B."}, "ch01-p12": {"title": "Ethical Decision-Making", "points": ["Rest's Model: 4 steps \u2014 recognise moral issue, judge, intention, behaviour.", "Must recognise there IS a moral issue first.", "Decision-maker must select appropriate moral course of action.", "Intention to follow through is separate from actually doing it."], "examTip": "Apply Rest's model to ethical scenarios in exam questions."}, "ch01-p13": {"title": "Ethical Decision-Making Models (EDMM)", "points": ["Tucker's 5-Question Model: Is it profitable? Legal? Fair? Right? Sustainable?", "All five must be answered affirmatively for an ethical decision.", "Provides a structured framework for ethical analysis.", "Useful for exam answers requiring ethical evaluation."], "examTip": "Apply Tucker's model \u2014 all 5 questions must be satisfied."}, "ch01-p14": {"title": "Ethics: Agency Issues & Stakeholder Conflicts", "points": ["Agency issues affect ethical framework where ownership is widely dispersed.", "Short-termism can lead to unethical decisions (pressure for quick profits).", "Stakeholder conflicts: what's ethical for shareholders may harm other stakeholders.", "Corporate social responsibility (CSR) addresses broader ethical obligations."], "examTip": "Discuss ethical implications of agency issues in scenarios."}, "ch01-p15": {"title": "Sustainability", "points": ["Sustainability = process of change balancing present and future needs.", "Sustainable development meets present needs without compromising future generations.", "Environmental, social, and governance (ESG) factors increasingly important.", "Companies expected to report on sustainability practices."], "examTip": "Link sustainability to corporate strategy and stakeholder theory."}, "ch01-p16": {"title": "Triple Bottom-Line Reporting", "points": ["TBL measures: economic, social, and environmental performance.", "People, Planet, Profit \u2014 the three pillars.", "Advantages: holistic view, stakeholder transparency, reputation.", "Disadvantages: measurement difficulty, comparability, cost."], "examTip": "Know advantages and disadvantages of TBL reporting."}, "ch01-p17": {"title": "Modern ESG Reporting", "points": ["Integrated Reporting Framework: shows impact on six capitals.", "TCFD: Task Force on Climate-Related Disclosures \u2014 risk disclosure.", "GRI Standards: global reporting initiative for sustainability.", "Trend toward mandatory ESG disclosure."], "examTip": "Know the main reporting frameworks and their purpose."}, "ch01-p18": {"title": "Need for Risk Management", "points": ["Risk = variability of returns, both positive and negative.", "Risk management reduces volatility and protects stakeholder interests.", "Theory: risk-averse managers may forego positive NPV projects.", "Shareholders can diversify; companies should focus on corporate risk."], "examTip": "Understand why companies manage risk vs shareholders diversifying."}, "ch01-p19": {"title": "Conflicts Between Equity and Debt Investors", "points": ["Equity investors absorb business risk; limited liability caps downside.", "Debt investors receive fixed returns; exposed to default risk.", "Conflict: equity may take on riskier projects (asset substitution).", "Debenture covenants protect debt investors from excessive risk-taking."], "examTip": "Explain conflicts and how covenants mitigate them."}, "ch01-p20": {"title": "Types of Risk and Risk Mitigation", "points": ["Business risk: volatility of operating cash flows (sales volatility, operating gearing).", "Financial risk: additional variability from debt (financial gearing).", "Risk mitigation: reducing impact/likelihood of risks.", "Hedging: financial strategy to reduce potential losses."], "examTip": "Distinguish business risk from financial risk \u2014 common exam question."}, "ch01-p21": {"title": "Risk Mitigation, Hedging & Diversification", "points": ["Risk mitigation: any action to reduce risk impact/likelihood.", "Risk hedging: financial instruments (forwards, options, futures).", "Diversification: spreading investments across assets/sectors.", "Corporate vs shareholder risk management debate."], "examTip": "Know when hedging vs diversification is appropriate."}, "ch01-p22": {"title": "Developing a Risk Framework", "points": ["Risk management process: identify, assess, evaluate, treat, monitor.", "IRM Risk Management Standard provides framework.", "Risk appetite: amount of risk willing to accept.", "Regular review and reporting essential."], "examTip": "Apply the risk management process to scenario questions."}, "ch01-p23": {"title": "Syllabus Coverage", "points": ["This chapter covers Learning Outcome A: Role of the Senior Financial Adviser.", "Includes: financial management function, stakeholders, ethics, risk management.", "Foundation for all subsequent chapters in the AFM syllabus."], "examTip": "Understand how this chapter links to other AFM topics."}, "ch01-p24": {"title": "Summary and Quiz", "points": ["Key definitions: strategy, financial strategy, risk, sustainability.", "Agency relationships and conflicts between stakeholders.", "Ethical frameworks: Rest's model, Tucker's 5 questions.", "Risk types: business risk vs financial risk."], "examTip": "Test yourself on all key definitions and concepts from this chapter."}, "ch01-p25": {"title": "Technical Articles", "points": ["ACCA technical articles supplement the study text.", "Green finance and sustainable investing are increasingly examinable.", "Review articles on corporate governance and ethics."], "examTip": "Read ACCA technical articles \u2014 examiners reference them."}};
+
+// ── Questions/Quiz/Flashcards (scraped data) ──
+var QUESTIONS = [];
+var QUIZ = [];
+var FLASHCARDS = [];
+var CREXAM = [];
+
+// ── State ──
+var pg = 0;
+var curView = 'dash';
+var sidebarCollapsed = false;
+
+// ── Storage ──
+function gk(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function sk(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function getProg(){return gk('afm_p',{})}
+function saveProg(p){sk('afm_p',p)}
+function markPage(id){var p=getProg();if(!p.ch01)p.ch01={};p.ch01[id]={m:1,t:Date.now()};saveProg(p)}
+function unmarkPage(id){var p=getProg();if(p.ch01&&p.ch01[id]){p.ch01[id].m=0;saveProg(p)}}
+function isMarked(id){var p=getProg();return p.ch01&&p.ch01[id]&&p.ch01[id].m===1}
+function chProg(){var p=getProg(),c=p.ch01||{};var m=0;for(var k in c)if(c[k].m)m++;return{m:m,t:CHAPTER.pages.length,p:Math.round(m/CHAPTER.pages.length*100)}}
+function overallProg(){var p=getProg(),m=0;for(var ch in p)for(var pg2 in p[ch])if(p[ch][pg2].m)m++;return{m:m,t:25,p:Math.round(m/25*100)}}
+function recDay(){var d=new Date().toISOString().split('T')[0],s=gk('afm_s',{});s[d]=1;sk('afm_s',s)}
+function getStreak(){var s=gk('afm_s',{}),ds=Object.keys(s).sort().reverse();if(!ds.length)return 0;var c=0,t=new Date();for(var i=0;i<ds.length;i++){var e=new Date(t);e.setDate(e.getDate()-i);if(ds[i]===e.toISOString().split('T')[0])c++;else break}return c}
+function getCal(n){n=n||30;var s=gk('afm_s',{}),r=[],t=new Date();for(var i=n-1;i>=0;i--){var d=new Date(t);d.setDate(d.getDate()-i);r.push(!!s[d.toISOString().split('T')[0]])}return r}
+function getTheme(){return localStorage.getItem('theme')||'light'}
+function setTheme(t){localStorage.setItem('theme',t);document.documentElement.setAttribute('data-theme',t)}
+function togTheme(){setTheme(getTheme()==='dark'?'light':'dark')}
+function examDays(){var t=new Date('2026-06-05'),n=new Date();return Math.max(0,Math.ceil((t-n)/864e5))}
+
+var CT={'01':'Financial Management & Goals','02':'Financial Appraisal Techniques','03':'Working Capital Management','04':'Business Valuations & M&A','05':'Corporate Finance Risk Mgmt','06':'Investment Appraisal & Inflation','07':'Growth & Sustainability','08':'International Financial Mgmt','09':'Treasury Management','10':'Business Restructuring','11':'Corporate Governance & Ethics','12':'Environmental & Social Factors','13':'Emerging Issues in FM','14':'Section A Case Study Orientation','15':'Section B Case Study (1)','16':'Section B Case Study (2)','17':'Section B Case Study (3)','18':'Exam Technique & Revision'};
+
+// ── Navigation ──
+function go(view){
+  curView=view;
+  var ids=['v-dash','v-content','v-summary','v-questions','v-quiz','v-flash','v-mind','v-cr','v-exam','v-analytics'];
+  for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i]);if(el)el.classList.remove('show')}
+  var map={dash:'v-dash',content:'v-content',summary:'v-summary',questions:'v-questions',quiz:'v-quiz',flash:'v-flash',mind:'v-mind',cr:'v-cr',exam:'v-exam',analytics:'v-analytics'};
+  var tel=document.getElementById(map[view]||'v-dash');
+  if(tel)tel.classList.add('show');
+  buildTopbar(view);
+  if(view==='content')renderPage();
+  if(view==='summary')renderSummary();
+  if(view==='questions')renderQuestions();
+  if(view==='quiz')renderQuiz();
+  if(view==='flash')renderFlash();
+  if(view==='mind')renderMind();
+  if(view==='cr')renderCR();
+  if(view==='dash')renderDash();
+}
+
+// ── Sidebar ──
+function buildSidebar(){
+  var dl=examDays(),sk2=getStreak();
+  var sh=sk2>0?'<div class="streak"><span>🔥 '+sk2+'-day streak</span></div>':'';
+  var links='';
+  for(var i=1;i<=18;i++){var n=String(i).padStart(2,'0'),id='ch'+n,active=id==='ch01',scraped=id==='ch01';
+    links+='<a href="#" class="sb-link'+(active?' on':'')+(scraped?'':' off')+'" title="'+CT[n]+'" onclick="if(!this.classList.contains(\'off\'))go(\'content\');return false"><span class="cn">'+n+'</span><span class="ct hid">'+CT[n]+'</span></a>'}
+  var cc=dl>30?'var(--warn)':'var(--err)';
+  document.getElementById('sidebar').innerHTML=
+    '<div class="sb-hdr"><a href="#" class="sb-logo" onclick="go(\'dash\');return false">📖 <span>AFM Study Hub</span></a><button class="sb-toggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button></div>'
+    +sh+'<nav class="sb-nav">'+links+'</nav>'
+    +'<div class="sb-ft"><div class="ec" style="color:'+cc+'"><span>⏰ '+dl+' days to ACCA AFM</span></div><a href="#" onclick="go(\'dash\');return false"><span>📊 Progress Dashboard</span></a></div>';
+}
+
+function toggleSidebar(){
+  sidebarCollapsed=!sidebarCollapsed;
+  var sb=document.getElementById('sidebar');
+  if(sidebarCollapsed)sb.classList.add('collapsed');
+  else sb.classList.remove('collapsed');
+}
+
+// ── Topbar ──
+function buildTopbar(view){
+  var op=overallProg();
+  var tabs=[
+    {l:'Content',v:'content'},{l:'Summary',v:'summary'},{l:'Questions',v:'questions'},
+    {l:'Quiz',v:'quiz'},{l:'Flashcards',v:'flash'},{l:'Mind Map',v:'mind'},{l:'CR Exam',v:'cr'}
+  ];
+  var tl='';
+  for(var i=0;i<tabs.length;i++){var t=tabs[i];tl+='<button class="tt'+(view===t.v?' on':'')+'" onclick="go(\''+t.v+'\')">'+t.l+'</button>'}
+  document.getElementById('topbar').innerHTML=
+    '<nav class="top-nav">'+tl+'</nav>'
+    +'<div class="top-r"><span class="pb">'+op.p+'%</span><button class="tg" onclick="togTheme()" title="Toggle theme">🌓</button></div>';
+}
+
+// ── Dashboard ──
+function renderDash(){
+  var op=overallProg(),sk2=getStreak(),cal=getCal(30);
+  document.getElementById('sp').textContent=op.p+'%';
+  document.getElementById('ss').textContent=sk2+' days';
+  document.getElementById('sw').textContent='0h 0m';
+  var cg=document.getElementById('cal');if(cg){var h='';for(var i=0;i<cal.length;i++)h+='<div class="cd" style="background:'+(cal[i]?'var(--ok)':'var(--bg2)')+';opacity:'+(cal[i]?1:.4)+'"></div>';cg.innerHTML=h}
+  var gr=document.getElementById('cgrid');if(gr){var h2='<a href="#" class="cc" onclick="go(\'content\');return false"><div class="cc-n">01</div><div class="cc-i"><div class="cc-t">Role of Financial Strategy</div><div class="cc-m">25 pages · 15%</div></div><span class="cc-ok">✓</span></a>';for(var j=2;j<=18;j++){var n=String(j).padStart(2,'0');h2+='<a href="#" class="cc off"><div class="cc-n">'+n+'</div><div class="cc-i"><div class="cc-t">'+CT[n]+'</div><div class="cc-m">Not scraped yet</div></div></a>'}gr.innerHTML=h2}
+}
+
+// ── Chapter Content ──
+function renderPage(){
+  var p=CHAPTER.pages[pg],tot=CHAPTER.pages.length;
+  document.getElementById('ch-title').textContent=CHAPTER.title;
+  document.getElementById('ch-meta').textContent=CHAPTER.examWeight+' exam weight · '+tot+' pages';
+  document.getElementById('pc').textContent='Page '+(pg+1)+' of '+tot;
+  document.getElementById('bp').disabled=pg===0;
+  document.getElementById('bn').disabled=pg===tot-1;
+  document.getElementById('pt').textContent=p.title;
+  document.getElementById('phtml').innerHTML=p.contentHtml;
+  updateMark();
+  // Scroll to top
+  document.querySelector('.content').scrollTop=0;
+}
+function chNav(d){pg=Math.max(0,Math.min(CHAPTER.pages.length-1,pg+d));renderPage()}
+function toggleMark(){var p=CHAPTER.pages[pg];if(isMarked(p.id))unmarkPage(p.id);else markPage(p.id);updateMark()}
+function updateMark(){
+  var p=CHAPTER.pages[pg],m=isMarked(p.id),pr=chProg();
+  var b=document.getElementById('cbtn');b.className='cbtn'+(m?' marked':'');b.textContent=m?'✓ Understood':'○ Mark as Understood';
+  document.getElementById('cprog').textContent=pr.m+'/'+pr.t+' understood ('+pr.p+'%)';
+}
+
+// ── Summary ──
+function renderSummary(){
+  var box=document.getElementById('sumlist');
+  var html='';
+  for(var i=0;i<CHAPTER.pages.length;i++){
+    var p=CHAPTER.pages[i];
+    var s=SUMMARIES[p.id];
+    if(!s)continue;
+    html+='<div class="summary-card"><h3>'+s.title+'</h3><ul>';
+    for(var j=0;j<s.points.length;j++){
+      html+='<li>'+s.points[j]+'</li>';
+    }
+    html+='</ul>';
+    if(s.examTip){
+      html+='<div class="tip">📝 <strong>Exam Tip:</strong> '+s.examTip+'</div>';
+    }
+    html+='</div>';
+  }
+  box.innerHTML=html;
+}
+
+// ── Questions ──
+function renderQuestions(){
+  var el=document.getElementById('qlist');
+  if(!QUESTIONS.length){
+    el.innerHTML='<div class="tc py16"><h2 style="color:var(--mute)">No practice questions yet</h2><p class="mt2 ts" style="color:var(--mute)">Questions will appear here once scraped from ACCA portal.</p></div>';
+    return;
+  }
+  var html='';
+  for(var i=0;i<QUESTIONS.length;i++){
+    var q=QUESTIONS[i];
+    html+='<div class="cc2"><div class="f ic jb" style="cursor:pointer" onclick="this.nextElementSibling.classList.toggle(\'hd\')"><span class="fb" style="color:var(--acc)">Q'+q.number+'</span><span class="tx tm">'+q.marks+' marks</span><span>▼</span></div><div class="hd mt4"><div class="chapter-content mb4">'+q.questionHtml+'</div></div></div>';
+  }
+  el.innerHTML=html;
+}
+
+// ── Quiz ──
+function renderQuiz(){
+  var el=document.getElementById('quizlist');
+  document.getElementById('qscore').textContent='';
+  if(!QUIZ.length){
+    el.innerHTML='<div class="tc py16"><h2 style="color:var(--mute)">No quiz questions yet</h2><p class="mt2 ts" style="color:var(--mute)">Quiz questions will appear here once scraped from ACCA portal.</p></div>';
+    return;
+  }
+  var html='',score=0,total=0;
+  for(var i=0;i<QUIZ.length;i++){
+    var q=QUIZ[i];
+    html+='<div class="cc2"><div class="tx fs mb2" style="color:var(--mute)">Question '+(i+1)+'</div><p class="ts mb4">'+q.questionText+'</p><div id="qopts'+i+'">';
+    for(var j=0;j<q.options.length;j++){
+      var o=q.options[j];
+      html+='<button class="quiz-opt" onclick="answerQuiz('+i+','+j+','+q.correctIndex+')"><span class="lbl">'+o.label+'.</span><span>'+o.text+'</span></button>';
+    }
+    html+='</div></div>';
+  }
+  el.innerHTML=html;
+}
+function answerQuiz(qi,selected,correct){
+  var opts=document.getElementById('qopts'+qi).children;
+  for(var i=0;i<opts.length;i++){
+    opts[i].disabled=true;
+    if(i===correct)opts[i].classList.add('correct');
+    if(i===selected&&i!==correct)opts[i].classList.add('wrong');
+  }
+}
+
+// ── Flashcards ──
+var fcIdx=0,fcFlipped=false;
+function renderFlash(){
+  var box=document.getElementById('fcbox');
+  if(!FLASHCARDS.length){
+    box.innerHTML='<div class="tc py16"><h2 style="color:var(--mute)">No flashcards yet</h2><p class="mt2 ts" style="color:var(--mute)">Flashcards will appear here once scraped from ACCA portal.</p></div>';
+    return;
+  }
+  fcIdx=0;fcFlipped=false;
+  renderFlashcard();
+}
+function renderFlashcard(){
+  var box=document.getElementById('fcbox');
+  var c=FLASHCARDS[fcIdx];
+  box.innerHTML='<div class="f ic jb mb4"><span class="tx tm">Card '+(fcIdx+1)+' of '+FLASHCARDS.length+'</span><button class="tx tm" onclick="fcIdx=0;fcFlipped=false;renderFlashcard()" style="background:none;border:none;cursor:pointer;color:var(--mute)">↻ Reset</button></div>'
+    +'<div class="fc" onclick="fcFlipped=!fcFlipped;renderFlashcard()"><div class="ts fm">'+(fcFlipped?c.back:c.front)+'</div><div class="fc-l">'+(fcFlipped?'Back':'Front')+' · Click to flip</div></div>'
+    +'<div class="f jcc gap2 mt4"><button class="pn-b" onclick="if(fcIdx>0){fcIdx--;fcFlipped=false;renderFlashcard()}" '+(fcIdx===0?'disabled':'')+'>← Previous</button><button class="pn-b" onclick="if(fcIdx<FLASHCARDS.length-1){fcIdx++;fcFlipped=false;renderFlashcard()}" '+(fcIdx===FLASHCARDS.length-1?'disabled':'')+'>Next →</button></div>'
+    +'<p class="tx tc mt4" style="color:var(--mute)">Space to flip · ← → to navigate</p>';
+}
+
+// ── Mind Map ──
+function renderMind(){
+  var box=document.getElementById('mmbox');
+  box.innerHTML=renderMMNode(MINDMAP,0);
+}
+function renderMMNode(node,depth){
+  var hasKids=node.children&&node.children.length>0;
+  var colors=['var(--head)','var(--acc)','var(--purp)','var(--mute)'];
+  var color=colors[Math.min(depth,colors.length-1)];
+  var html='<div style="'+(depth>0?'margin-left:1.5rem;border-left:2px solid var(--bdr);padding-left:.75rem':'')+'">';
+  if(hasKids){
+    html+='<button class="mm-n" style="color:'+color+';font-weight:'+(depth===0?'700':'500')+';font-size:'+(depth===0?'1rem':'.875rem')+'" onclick="var c=this.parentElement.querySelector(\'.mm-kids\');if(c)c.classList.toggle(\'hd\')"><span>▶</span><span>'+node.label+'</span></button>';
+    html+='<div class="mm-kids">';
+    for(var i=0;i<node.children.length;i++){
+      html+=renderMMNode(node.children[i],depth+1);
+    }
+    html+='</div>';
+  }else{
+    // Leaf node - make it a link to the page
+    var pageIdx=-1;
+    for(var j=0;j<CHAPTER.pages.length;j++){if(CHAPTER.pages[j].id===node.id){pageIdx=j;break}}
+    if(pageIdx>=0){
+      html+='<a href="#" style="color:'+color+';font-size:.875rem;text-decoration:none;display:block;padding:.125rem 0" onclick="pg='+pageIdx+';go(\'content\');return false">'+node.label+'</a>';
+    }else{
+      html+='<span style="color:'+color+';font-size:.875rem;display:block;padding:.125rem 0">'+node.label+'</span>';
+    }
+  }
+  html+='</div>';
+  return html;
+}
+
+// ── CR Exam ──
+function renderCR(){
+  document.getElementById('crlist').innerHTML='<div class="tc py16"><h2 style="color:var(--mute)">No CR exam questions for this chapter</h2><p class="mt2 ts" style="color:var(--mute)">CR exam case studies will appear here once scraped from ACCA portal.</p></div>';
+}
+
+// ── Keyboard ──
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+  if(curView==='content'){
+    if(e.key==='ArrowLeft')chNav(-1);
+    if(e.key==='ArrowRight')chNav(1);
+    if(e.key==='ArrowUp'){e.preventDefault();document.querySelector('.content').scrollBy(0,-150)}
+    if(e.key==='ArrowDown'){e.preventDefault();document.querySelector('.content').scrollBy(0,150)}
+  }
+  if(curView==='flash'&&FLASHCARDS.length){
+    if(e.key===' '){e.preventDefault();fcFlipped=!fcFlipped;renderFlashcard()}
+    if(e.key==='ArrowLeft'&&fcIdx>0){fcIdx--;fcFlipped=false;renderFlashcard()}
+    if(e.key==='ArrowRight'&&fcIdx<FLASHCARDS.length-1){fcIdx++;fcFlipped=false;renderFlashcard()}
+  }
+  // Global: scroll with up/down on any view
+  if(!['content','flash'].includes(curView)){
+    if(e.key==='ArrowUp'){e.preventDefault();document.querySelector('.content').scrollBy(0,-150)}
+    if(e.key==='ArrowDown'){e.preventDefault();document.querySelector('.content').scrollBy(0,150)}
+  }
+});
+
+// ── Load scraped data if available ──
+function loadScrapedData(){
+  // Try to load from data/ directory
+  fetch('data/questions.json').then(function(r){if(r.ok)return r.json()}).then(function(d){if(d)QUESTIONS=d}).catch(function(){});
+  fetch('data/quiz.json').then(function(r){if(r.ok)return r.json()}).then(function(d){if(d)QUIZ=d}).catch(function(){});
+  fetch('data/flashcards.json').then(function(r){if(r.ok)return r.json()}).then(function(d){if(d)FLASHCARDS=d}).catch(function(){});
+  fetch('data/cr-exam.json').then(function(r){if(r.ok)return r.json()}).then(function(d){if(d)CREXAM=d}).catch(function(){});
+}
+
+// ── Init ──
+setTheme(getTheme());
+recDay();
+buildSidebar();
+loadScrapedData();
+go('dash');
+</script>
+</body>
+</html>

@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { Question } from '@/types';
 import { QuestionCard } from '@/components/questions/QuestionCard';
 
 export default function CRExamPage() {
   const params = useParams();
-  const chapterId = params.id as string;
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const chapterId = params.id;
+  const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

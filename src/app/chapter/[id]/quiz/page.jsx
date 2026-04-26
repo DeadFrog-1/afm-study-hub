@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { QuizQuestion } from '@/types';
 import { QuizCard } from '@/components/quiz/QuizCard';
 
 export default function QuizPage() {
   const params = useParams();
-  const chapterId = params.id as string;
-  const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
+  const chapterId = params.id;
+  const [quiz, setQuiz] = useState([]);
   const [loading, setLoading] = useState(true);
   const [score, setScore] = useState({ correct: 0, total: 0 });
 

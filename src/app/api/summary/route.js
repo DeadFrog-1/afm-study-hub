@@ -1,9 +1,9 @@
 // ─────────────────────────────────────────────
 // API: AI Summary generation (placeholder)
 // ─────────────────────────────────────────────
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function POST(req) {
   const body = await req.json();
   const { chapterId, pageId, content } = body;
 

@@ -1,17 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import type { MindMapNode } from '@/types';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-
-interface Props {
-  node: MindMapNode;
-  depth: number;
-}
 
 const DEPTH_COLORS = ['#6B0000', '#800000', '#7C3AED', '#8B7AA0'];
 
-export function MindMap({ node, depth }: Props) {
+export function MindMap({ node, depth }) {
   const [expanded, setExpanded] = useState(depth < 2);
   const hasChildren = node.children && node.children.length > 0;
   const color = DEPTH_COLORS[Math.min(depth, DEPTH_COLORS.length - 1)];
@@ -34,7 +28,7 @@ export function MindMap({ node, depth }: Props) {
       </button>
       {expanded && hasChildren && (
         <div className="animate-fade-in">
-          {node.children!.map(child => (
+          {node.children.map(child => (
             <MindMap key={child.id} node={child} depth={depth + 1} />
           ))}
         </div>

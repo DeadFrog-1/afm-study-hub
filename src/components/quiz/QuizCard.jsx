@@ -1,23 +1,15 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import type { QuizQuestion } from '@/types';
 import { CheckCircle2, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
-interface Props {
-  question: QuizQuestion;
-  index: number;
-  onAnswer: (correct: boolean) => void;
-  chapterId: string;
-}
-
-export function QuizCard({ question, index, onAnswer, chapterId }: Props) {
-  const [selected, setSelected] = useState<string | null>(null);
+export function QuizCard({ question, index, onAnswer, chapterId }) {
+  const [selected, setSelected] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
   const correctLabel = question.options[question.correctIndex]?.label;
 
-  const handleSelect = useCallback((label: string) => {
+  const handleSelect = useCallback((label) => {
     if (selected) return; // already answered
     setSelected(label);
     const correct = label === correctLabel;

@@ -2,55 +2,27 @@
 // Zustand Global State
 // ─────────────────────────────────────────────
 import { create } from 'zustand';
-import type { Chapter, Question, QuizQuestion, Flashcard, MindMapNode, ChapterProgress, QuizBattleSession } from '@/types';
 
-interface StudyStore {
+export const useStudyStore = create((set) => ({
   // ── Current state ──
-  currentChapter: Chapter | null;
-  currentQuestions: Question[];
-  currentQuiz: QuizQuestion[];
-  currentFlashcards: Flashcard[];
-  currentMindMap: MindMapNode | null;
-  sidebarOpen: boolean;
-  theme: 'light' | 'dark';
-
-  // ── Progress ──
-  chapterProgress: Record<string, ChapterProgress>;
-  overallPercent: number;
-  studyStreak: number;
-  weeklyMinutes: number;
-
-  // ── Quiz Battle ──
-  activeBattle: QuizBattleSession | null;
-
-  // ── Actions ──
-  setCurrentChapter: (ch: Chapter) => void;
-  setCurrentQuestions: (q: Question[]) => void;
-  setCurrentQuiz: (q: QuizQuestion[]) => void;
-  setCurrentFlashcards: (f: Flashcard[]) => void;
-  setCurrentMindMap: (m: MindMapNode | null) => void;
-  toggleSidebar: () => void;
-  setTheme: (t: 'light' | 'dark') => void;
-  updateChapterProgress: (id: string, progress: ChapterProgress) => void;
-  setOverallPercent: (p: number) => void;
-  setStudyStreak: (s: number) => void;
-  setWeeklyMinutes: (m: number) => void;
-}
-
-export const useStudyStore = create<StudyStore>((set) => ({
   currentChapter: null,
   currentQuestions: [],
   currentQuiz: [],
   currentFlashcards: [],
   currentMindMap: null,
   sidebarOpen: true,
-  theme: (typeof window !== 'undefined' && (localStorage.getItem('theme') as 'light' | 'dark')) || 'light',
+  theme: (typeof window !== 'undefined' && localStorage.getItem('theme')) || 'light',
+
+  // ── Progress ──
   chapterProgress: {},
   overallPercent: 0,
   studyStreak: 0,
   weeklyMinutes: 0,
+
+  // ── Quiz Battle ──
   activeBattle: null,
 
+  // ── Actions ──
   setCurrentChapter: (ch) => set({ currentChapter: ch }),
   setCurrentQuestions: (q) => set({ currentQuestions: q }),
   setCurrentQuiz: (q) => set({ currentQuiz: q }),

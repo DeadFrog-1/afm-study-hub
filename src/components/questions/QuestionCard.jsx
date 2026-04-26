@@ -1,20 +1,14 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import type { Question } from '@/types';
 import { Clock, Eye, ChevronDown, ChevronUp } from 'lucide-react';
 
-interface Props {
-  question: Question;
-  chapterId: string;
-}
-
-export function QuestionCard({ question, chapterId }: Props) {
+export function QuestionCard({ question, chapterId }) {
   const [answerText, setAnswerText] = useState('');
   const [timerDone, setTimerDone] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef(null);
   const startTimeRef = useRef(Date.now());
 
   // Start 45s timer on mount

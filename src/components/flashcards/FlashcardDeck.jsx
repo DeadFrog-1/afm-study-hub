@@ -1,15 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import type { Flashcard } from '@/types';
+import { useState } from 'react';
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 
-interface Props {
-  cards: Flashcard[];
-  chapterId: string;
-}
-
-export function FlashcardDeck({ cards, chapterId }: Props) {
+export function FlashcardDeck({ cards, chapterId }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import type { Chapter, ChapterPage } from '@/types';
 import { ChapterContent } from '@/components/chapter/ChapterContent';
 import { PageSummary } from '@/components/chapter/PageSummary';
 import { ConfidenceMarker } from '@/components/chapter/ConfidenceMarker';
@@ -10,8 +9,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ChapterPage() {
   const params = useParams();
-  const chapterId = params.id as string;
-  const [chapter, setChapter] = useState<Chapter | null>(null);
+  const chapterId = params.id;
+  const [chapter, setChapter] = useState(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 

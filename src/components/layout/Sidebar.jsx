@@ -12,7 +12,7 @@ import clsx from 'clsx';
 
 const CHAPTERS = Array.from({ length: 18 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
-  const titles: Record<string, string> = {
+  const titles = {
     '01': 'Financial Management & Goals',
     '02': 'Financial Appraisal Techniques',
     '03': 'Working Capital Management',
@@ -38,17 +38,17 @@ const CHAPTERS = Array.from({ length: 18 }, (_, i) => {
 export function Sidebar() {
   const pathname = usePathname();
   const { sidebarOpen, toggleSidebar, studyStreak } = useStudyStore();
-  const [scrapedChapters, setScrapedChapters] = useState<Set<string>>(new Set());
+  const [scrapedChapters, setScrapedChapters] = useState(new Set());
 
   useEffect(() => {
     fetch('/api/content/metadata')
       .then(r => r.json())
       .then(data => {
         if (data?.chapters) {
-          const scraped = new Set<string>(
+          const scraped = new Set(
             data.chapters
-              .filter((c: { status: string }) => c.status === 'scraped')
-              .map((c: { id: string }) => c.id)
+              .filter((c) => c.status === 'scraped')
+              .map((c) => c.id)
           );
           setScrapedChapters(scraped);
         }

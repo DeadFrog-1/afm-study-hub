@@ -1,14 +1,14 @@
 // ─────────────────────────────────────────────
 // API: Progress tracking
 // ─────────────────────────────────────────────
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import {
   markPageConfident, unmarkPageConfident, getChapterProgress,
   getOverallProgress, saveQuizAttempt, getStudyStreak,
   getStreakCalendar, getWeeklyStudyTime,
 } from '@/lib/db';
 
-export async function GET(req: NextRequest) {
+export async function GET(req) {
   const type = req.nextUrl.searchParams.get('type');
 
   if (type === 'streak') {
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ error: 'Unknown type' }, { status: 400 });
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req) {
   const body = await req.json();
   const { chapterId, pageId, action, questionId, quizId, selectedOption, isCorrect, answerText } = body;
 

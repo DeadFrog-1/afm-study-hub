@@ -1,10 +1,6 @@
 'use client';
 
-interface Props {
-  summary: string;
-}
-
-export function PageSummary({ summary }: Props) {
+export function PageSummary({ summary }) {
   return (
     <div className="content-block-summary">
       <h4 className="text-sm font-semibold mb-2" style={{ color: 'var(--summary-border)' }}>

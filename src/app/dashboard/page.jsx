@@ -7,18 +7,10 @@ import {
 } from 'lucide-react';
 import { useStudyStore } from '@/store/useStudyStore';
 
-interface ChapterInfo {
-  id: string;
-  title: string;
-  examWeight: string;
-  status: string;
-  stats?: { pages: number };
-}
-
 export default function DashboardPage() {
   const { studyStreak, weeklyMinutes, overallPercent } = useStudyStore();
-  const [chapters, setChapters] = useState<ChapterInfo[]>([]);
-  const [streakCalendar, setStreakCalendar] = useState<boolean[]>([]);
+  const [chapters, setChapters] = useState([]);
+  const [streakCalendar, setStreakCalendar] = useState([]);
 
   useEffect(() => {
     fetch('/api/content/metadata')
@@ -112,7 +104,7 @@ export default function DashboardPage() {
   );
 }
 
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string; color: string }) {
+function StatCard({ icon, label, value, color }) {
   return (
     <div className="rounded-lg p-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
       <div className="flex items-center gap-2 mb-2" style={{ color }}>{icon}</div>
@@ -122,7 +114,7 @@ function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label:
   );
 }
 
-function QuickAction({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+function QuickAction({ href, icon, label }) {
   return (
     <Link
       href={href}
