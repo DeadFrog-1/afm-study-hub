@@ -1,0 +1,13 @@
+{
+  "appId": "com.afm.study-hub",
+  "productName": "AFM Study Hub",
+  "directories": { "output": "dist" },
+  "files": [
+    ".next/**/*",
+    "electron/**/*",
+    "content/**/*",
+    "package.json"
+  ],
+  "win": { "target": "nsis" },
+  "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true }
+}
